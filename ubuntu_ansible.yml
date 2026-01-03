@@ -1,0 +1,120 @@
+---
+# =====================================================
+# Control Node Setup
+# =====================================================
+- name: "[ Setup Control Node.. ]"
+  hosts: localhost
+  become: true
+  gather_facts: false
+
+  tasks:
+    # SSH 통신에 필요한 sshpass 설치
+    - name: "Install sshpass on Control node"
+      apt:
+        name: sshpass
+        state: present
+        update_cache: yes
+
+    # 설치 확인
+    - name: "Check.. sshpass.."
+      command: sshpass -V
+      register: sshpass_check
+
+    - name: "Status.. sshpass.."
+      debug:
+        msg: "Good!.. | {{ sshpass_check.stdout_lines[0] }} installed successfully.."
+
+
+# =====================================================
+# Ubuntu Servers Setup
+# =====================================================
+- name: "[ Ubuntu_Servers Settings.. ]"
+  hosts: Ubuntu_Servers
+  become: true
+  gather_facts: false
+
+  vars:
+    ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
+
+  tasks:
+    # root 계정 패스워드 설정
+    - name: "Set Root Password"
+      user:
+        name: root
+        password: "{{ root_password | password_hash('sha512') }}"
+        shell: /bin/bash
+
+    # 기본 유틸리티 패키지 설치
+    - name: "Update apt | Base packages"
+      apt:
+        name: "{{ install_packages }}"
+        state: present
+        update_cache: yes
+
+    # NIC 이름 고정 설정 (GRUB)
+    - name: "Change NIC name configuration"
+      lineinfile:
+        path: /etc/default/grub
+        regexp: '^GRUB_CMDLINE_LINUX_DEFAULT='
+        line: 'GRUB_CMDLINE_LINUX_DEFAULT="net.ifnames=0 biosdevname=0"'
+      notify: update-grub
+
+    # cloud-init 비활성화
+    # cloud-init은 부팅 시 네트워크 / hostname / user 등을 자동으로 변경할 수 있음..
+    - name: "Disable cloud-init"
+      file:
+        path: "{{ item.path }}"
+        state: "{{ item.state }}"
+        owner: root
+        group: root
+        mode: "{{ item.mode }}"
+      loop:
+        - { path: /etc/cloud, state: directory, mode: '0755' }
+        - { path: /etc/cloud/cloud-init.disabled, state: touch, mode: '0644' }
+
+# =====================================================
+# Handlers
+# =====================================================
+  handlers:
+    # GRUB 업데이트
+    - name: update-grub
+      command: grub-mkconfig -o /boot/grub/grub.cfg
+
+
+# =====================================================
+# Verification Tasks (설치 및 설정 확인)
+# =====================================================
+- name: "[ Check.. Ubuntu_Servers Setup.. ]"
+  hosts: Ubuntu_Servers
+  become: true
+  gather_facts: false
+
+  tasks:
+    # 설치된 패키지 확인
+    - name: "Check.. dpkg packages.."
+      shell: dpkg -l | grep -E "{{ install_packages | replace(',', '|') }}"
+      register: packages_check
+
+    - name: "Status.. dpkg packages.."
+      debug:
+        msg: "Good!.. | {{ packages_check.stdout_lines }} installed successfully.."
+
+    # GRUB NIC 설정 확인
+    - name: "Check.. GRUB NIC configuration.."
+      shell: "grep 'GRUB_CMDLINE_LINUX_DEFAULT' /etc/default/grub"
+      register: grub_check
+
+    - name: "Status.. NIC config.."
+      debug:
+        msg: "Good!.. | {{ grub_check.stdout_lines }} configuration successfully.."
+
+    # cloud-init 비활성화 플래그 파일 존재 여부 확인
+    - name: "Check.. cloud-init disabled flag file.."
+      stat:
+        path: /etc/cloud/cloud-init.disabled
+      register: cloud_init_check
+
+    - name: "Status.. cloud-init.."
+      debug:
+        msg: "Good!.. | cloud-init is disabled.."
+      when: cloud_init_check.stat.exists

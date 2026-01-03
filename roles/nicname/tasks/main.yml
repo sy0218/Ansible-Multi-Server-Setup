@@ -1,0 +1,21 @@
+# -----------------------------------------------------
+# NIC Name Configuration
+# -----------------------------------------------------
+
+# NIC 이름 고정 설정 (GRUB)
+- name: "Change NIC name configuration"
+  lineinfile:
+    path: /etc/default/grub
+    regexp: '^GRUB_CMDLINE_LINUX_DEFAULT='
+    line: 'GRUB_CMDLINE_LINUX_DEFAULT="net.ifnames=0 biosdevname=0"'
+  notify: update-grub
+
+# NIC 설정 검증
+- name: "Check.. GRUB NIC configuration.."
+  shell: "grep 'GRUB_CMDLINE_LINUX_DEFAULT' /etc/default/grub"
+  register: grub_check
+  changed_when: false
+
+- name: "Status.. NIC config.."
+  debug:
+    msg: "Good!.. | {{ grub_check.stdout_lines }} configuration successfully.."

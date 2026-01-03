@@ -1,0 +1,20 @@
+# -----------------------------------------------------
+# Control Node 기본 설정
+# -----------------------------------------------------
+
+# sshpass 설치 (password 기반 SSH 통신용)
+- name: "Install sshpass on Control node"
+  apt:
+    name: sshpass
+    state: present
+    update_cache: yes
+
+# sshpass 설치 확인
+- name: "Check.. sshpass.."
+  command: sshpass -V
+  register: sshpass_check
+  changed_when: false
+
+- name: "Status.. sshpass.."
+  debug:
+    msg: "Good!.. | {{ sshpass_check.stdout_lines[0] }} installed successfully.."

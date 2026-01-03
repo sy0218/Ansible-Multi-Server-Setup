@@ -1,0 +1,31 @@
+# -----------------------------------------------------
+# Korean Locale 설정
+# -----------------------------------------------------
+
+# 1. Korean Language pack Install
+- name: "Install Korean language package"
+  apt:
+    name: language-pack-ko
+    state: present
+    update_cache: yes
+
+# 2. Make ko_KR,UTF-8 local
+- name: "Create ko_KR.UTF-8 locale"
+  command: locale-gen ko_KR.UTF-8
+
+# 3. Change system default language to Korean
+- name: "Set default language to Korean"
+  command: update-locale LANG=ko_KR.UTF-8
+
+# 4. Use Korean right now
+- name: "Apply Korean language now"
+  shell: export LANG=ko_KR.UTF-8
+  changed_when: false
+
+# Korean Locale 검증
+- name: "Assert.. system default locale is Korean"
+  assert:
+    that:
+      - "'LANG=ko_KR.UTF-8' in lookup('file', '/etc/default/locale')"
+    success_msg: "Good!.. | System default locale is set to Korean (ko_KR.UTF-8)"
+    fail_msg: "ERROR!.. | System locale is NOT Korean"

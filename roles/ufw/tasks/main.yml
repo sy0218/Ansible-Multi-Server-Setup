@@ -1,0 +1,22 @@
+# -----------------------------------------------------
+# 방화벽(UFW) 비활성화
+# -----------------------------------------------------
+
+# UFW Service Disable
+- name: "Disalbe UFW firewall"
+  systemd:
+    name: ufw
+    enabled: false
+    state: stopped
+
+# 방화벽 비활성화 검증
+- name: "Check.. UFW status.."
+  command: systemctl is-active ufw
+  register: ufw_status
+  failed_when: false
+  changed_when: false
+
+- name: "Status.. UFW.."
+  debug:
+    msg: "Good!.. | UFW is disabled (inactie).."
+  when: ufw_status.stdout != "active"
