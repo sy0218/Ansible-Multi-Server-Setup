@@ -93,24 +93,24 @@ install_packages=net-tools,python3-pip
 <br>
 
 ## 🧩 Roles 설명
-### 🔹 control
+### 🔹 control → [`📂 main.yml`](./roles/control/tasks/control.md)
 - Control Node 기본 설정
 - password 기반 SSH 사용을 위한 sshpass 설치
 ---
-### 🔹 packages
+### 🔹 packages → [`📂 main.yml`](./roles/packages/tasks/packages.md)
 - 공통 필수 패키지 설치
 - install_packages 변수 기반 동적 설치
 ---
-### 🔹 nicname
+### 🔹 nicname → [`📂 main.yml`](./roles/nicname/tasks/nicname.md)
 - 네트워크 인터페이스 이름 통일
 ---
-### 🔹 cloud_init
+### 🔹 cloud_init → [`📂 main.yml`](./roles/cloud_init/tasks/cloud_init.md)
 - cloud-init 비활성화
 ---
-### 🔹 ufw
+### 🔹 ufw → [`📂 main.yml`](./roles/ufw/tasks/ufw.md)
 - 방화벽(UFW) 비활성화
 ---
-### 🔹 locale_ko
+### 🔹 locale_ko → [`📂 main.yml`](./roles/locale_ko/tasks/locale_ko.md)
 - 시스템 Locale 한국어 설정
 - UTF-8 환경 구성
 ---
@@ -119,7 +119,7 @@ install_packages=net-tools,python3-pip
 ## 🧪 실행 방법
 ```bash
 # 사전 검증
-ansible-playbook -i host.ini ubuntu_ansible.yml --check --diff
+ansible-playbook -i host.ini ubuntu_ansible.yml
 
 # 실행
 ansible-playbook -i host.ini ubuntu_ansible.yml
@@ -146,4 +146,3 @@ multi-server-setup-ansible/
     └── locale_ko/
         └── tasks/main.yml
 ```
----
