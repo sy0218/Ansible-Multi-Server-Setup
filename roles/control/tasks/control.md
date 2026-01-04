@@ -31,11 +31,9 @@ password 기반 SSH 통신을 사용하기 위해 필요한 **sshpass 설치 및
   command: sshpass -V
   register: sshpass_check
   changed_when: false
-
 ```
 - sshpass -V 명령어로 설치 여부 및 버전 확인
 - 단순 검증 목적이므로 changed_when: false 설정
-<br>
 ---
 ### 3️⃣ 설치 상태 출력
 ``` yaml
