@@ -1,4 +1,4 @@
-# cloud-init 비활성화 (Ansible)
+# ☁️ cloud-init 비활성화 (Ansible)
 - cloud-init이 부팅 시 네트워크, hostname, 사용자 설정을
 자동으로 변경하는 것을 방지하기 위해 비활성화한다.
 ---
