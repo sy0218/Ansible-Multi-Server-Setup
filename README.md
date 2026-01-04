@@ -88,6 +88,11 @@ install_packages=net-tools,python3-pip
     - cloud_init
     - ufw
     - locale_ko
+    - control
+    - ntp
+    - open_files
+    - ssh_root_login
+    - timezone
 ```
 ---
 <br>
@@ -148,16 +153,27 @@ multi-server-setup-ansible/
 ├── host.ini
 ├── ubuntu_ansible.yml
 └── roles/
+    ├── cloud_init/
+    │   └── tasks/main.yml
     ├── control/
+    │   └── tasks/main.yml
+    ├── locale_ko/
+    │   └── tasks/main.yml
+    ├── nicname/
+    │   ├── handlers/main.yml
+    │   └── tasks/main.yml
+    ├── ntp/
+    │   └── tasks/main.yml
+    ├── open_files/
     │   └── tasks/main.yml
     ├── packages/
     │   └── tasks/main.yml
-    ├── nicname/
+    ├── ssh_root_login/
+    │   ├── handlers/main.yml
     │   └── tasks/main.yml
-    ├── cloud_init/
+    ├── timezone/
     │   └── tasks/main.yml
-    ├── ufw/
-    │   └── tasks/main.yml
-    └── locale_ko/
+    └── ufw/
         └── tasks/main.yml
 ```
+---
