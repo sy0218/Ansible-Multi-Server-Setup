@@ -1,0 +1,56 @@
+# -----------------------------------------------------
+# logrotate 기본 설정
+# -----------------------------------------------------
+# 1. 로그 회전 주기
+- name: "Set logrotate rotation period to monthly"
+  lineinfile:
+    path: /etc/logrotate.conf
+    regexp: '^(weekly|monthly|daily|yearly)$'
+    line: 'weekly'
+    state: present
+
+# 2. 로그 보관 개수
+- name: "Set logrotate rotate count to 12"
+  lineinfile:
+    path: /etc/logrotate.conf
+    regexp: '^rotate\s+\d+'
+    line: 'rotate 4'
+    state: present
+
+# 3. 로그 회전 후 새 파일 생성
+- name: "Enable create option in logrotate"
+  lineinfile:
+    path: /etc/logrotate.conf
+    regexp: '^create$'
+    line: 'create'
+    state: present
+
+# 4. logrotate 실행 사용자 설정
+- name: "Set logrotate su directive"
+  lineinfile:
+    path: /etc/logrotate.conf
+    regexp: '^su\s+'
+    line: 'su root adm'
+    state: present
+
+# 5. logrotate.d include 활성화
+- name: "Enable include /etc/logrotate.d"
+  lineinfile:
+    path: /etc/logrotate.conf
+    regexp: '^include\s+/etc/logrotate.d'
+    line: 'include /etc/logrotate.d'
+    state: present
+
+# -----------------------------------------------------
+# logrotate 설정 검증
+# -----------------------------------------------------
+- name: "Assert.. logrotate configuration is correctly set"
+  assert:
+    that:
+      - "'monthly' in lookup('file', '/etc/logrotate.conf')"
+      - "'rotate 4' in lookup('file', '/etc/logrotate.conf')"
+      - "'create' in lookup('file', '/etc/logrotate.conf')"
+      - "'su root adm' in lookup('file', '/etc/logrotate.conf')"
+      - "'include /etc/logrotate.d' in lookup('file', '/etc/logrotate.conf')"
+    success_msg: "Good!.. | logrotate configuration is correctly applied"
+    fail_msg: "ERROR!.. | logrotate configuration is NOT correctly applied"

@@ -30,4 +30,7 @@
 #    - ssh_root_login
 #    - timezone
 #    - ntp
-    - open_files
+#    - open_files
+#    - logrotate
+#    - shell_default
+    - java

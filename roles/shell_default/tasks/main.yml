@@ -1,0 +1,25 @@
+# -----------------------------------------------------
+# 시스템 기본 shell 변경 (dash → bash)
+# -----------------------------------------------------
+
+- name: "Disable dash as default /bin/sh"
+  debconf:
+    name: dash
+    question: dash/sh
+    value: false
+    vtype: boolean
+
+- name: "Reconfigure dash package"
+  command: dpkg-reconfigure -f noninteractive dash
+  changed_when: false
+
+# -----------------------------------------------------
+# 시스템 기본 shell 변경 검증
+# -----------------------------------------------------
+
+- name: "Assert.. default /bin/sh points to bash"
+  assert:
+    that:
+      - "lookup('pipe', 'readlink -f /bin/sh') == '/usr/bin/bash'"
+    success_msg: "Good!.. | Default shell (/bin/sh) is set to bash"
+    fail_msg: "ERROR!.. | Default shell (/bin/sh) is NOT set to bash"

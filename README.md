@@ -134,6 +134,17 @@ install_packages=net-tools,python3-pip
 - root 계정 open files(nofile) 제한 증가
 - `/etc/security/limits.conf` 기반 설정
 ---
+### 🔹 logrotate → [`📂 main.yml`](./roles/logrotate/tasks/logrotate.md)
+- 시스템 로그 회전 정책 설정
+---
+### 🔹 shell_default → [`📂 main.yml`](./roles/shell_default/tasks/shell_default.md)
+- 시스템 기본 `/bin/sh` 설정 변경
+- dash 비활성화 및 bash 기본 shell 적용
+---
+### 🔹 java → [`📂 main.yml`](./roles/java/tasks/java.md)
+- host.ini 변수 기반 Java 버전 선택 설치
+- OpenJDK 8 / 11 / 17 / 21 유연한 적용
+---
 <br>
 
 ## 🧪 실행 방법
@@ -173,7 +184,13 @@ multi-server-setup-ansible/
     │   └── tasks/main.yml
     ├── timezone/
     │   └── tasks/main.yml
-    └── ufw/
+    ├── ufw/
+    │   └── tasks/main.yml
+    ├── logrotate/
+    │   └── tasks/main.yml
+    ├── shell_default/
+    │   └── tasks/main.yml
+    └── java/
         └── tasks/main.yml
 ```
 ---

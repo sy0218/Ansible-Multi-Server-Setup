@@ -1,0 +1,25 @@
+# -----------------------------------------------------
+# Java 설치 (변수 기반)
+# -----------------------------------------------------
+
+- name: "Update apt cache"
+  apt:
+    update_cache: yes
+    cache_valid_time: 3600
+
+- name: "Install OpenJDK (version {{ java_version }})"
+  apt:
+    name: "openjdk-{{ java_version }}-jdk"
+    state: present
+
+# -----------------------------------------------------
+# Java 설치 검증
+# -----------------------------------------------------
+
+- name: "Assert.. Java {{ java_version }} is installed"
+  assert:
+    that:
+      - "'openjdk' in lookup('pipe', 'java -version 2>&1')"
+      - "'{{ java_version }}' in lookup('pipe', 'java -version 2>&1')"
+    success_msg: "Good!.. | Java {{ java_version }} installed successfully"
+    fail_msg: "ERROR!.. | Java {{ java_version }} is NOT installed"
