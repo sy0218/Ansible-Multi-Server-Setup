@@ -161,7 +161,7 @@ java_version=11
 - APT 패키지 자동 업데이트 비활성화
 - unattended-upgrades 및 주기적 패키지 업데이트 차단
 ---
-### common_bash → [`📂 main.yml`](./roles/common_bash/tasks/common_bash.md)
+### 🔹 common_bash → [`📂 main.yml`](./roles/bash_common/tasks/common_bash.md)
 - 시스템 공통 Bash 환경 설정 적용
 - `/etc/job_project.conf` 기반 환경 통합 관리
 - rm / cp / mv 보호 alias 및 PS1 프롬프트 통일
