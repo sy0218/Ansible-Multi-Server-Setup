@@ -90,6 +90,7 @@ job_project_envs=JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64;KAFKA_HOME=/applic
     ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
 
   roles:
+    - root_password
     - packages
     - nicname
     - cloud_init
