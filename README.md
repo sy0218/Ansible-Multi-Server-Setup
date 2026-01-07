@@ -198,8 +198,6 @@ ansible-playbook -i host.ini ubuntu_ansible.yml
 
 ## 📁 디렉토리 구성도
 ```bash
-## 📁 디렉토리 구성도
-```bash
 multi-server-setup-ansible/
 ├── host.ini
 ├── ubuntu_ansible.yml
