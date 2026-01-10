@@ -76,7 +76,6 @@ ap
 s1
 s2
 
-
 # -------------------------------------------------
 # Docker 전용 변수
 # -------------------------------------------------
@@ -99,6 +98,23 @@ s2 zookeeper_myid=3
 zookeeper_install_dir=/application
 zookeeper_data_dir=/application/id_zookeeper
 zookeeper_url=https://archive.apache.org/dist/zookeeper/zookeeper-3.7.2/apache-zookeeper-3.7.2-bin.tar.gz
+
+
+# -------------------------------------------------
+# Kafka 서버 그룹
+# -------------------------------------------------
+[Kafka_Servers]
+ap
+s1
+s2
+
+# -------------------------------------------------
+# Kafka 공통 변수
+# -------------------------------------------------
+[Kafka_Servers:vars]
+kafka_install_dir=/application
+kafka_log_dir=/logs/kafka_log
+kafka_url=https://archive.apache.org/dist/kafka/3.6.2/kafka_2.13-3.6.2.tgz
 ```
 ---
 <br>
@@ -175,6 +191,20 @@ zookeeper_url=https://archive.apache.org/dist/zookeeper/zookeeper-3.7.2/apache-z
 
   roles:
     - zookeeper
+
+# =====================================================
+# Kafka Servers
+# =====================================================
+- name: "[ Kafka_Servers Settings.. ]"
+  hosts: Kafka_Servers
+  become: true
+  gather_facts: false
+
+  vars:
+    ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
+
+  roles:
+    - kafka
 ```
 ---
 <br>
@@ -255,6 +285,10 @@ zookeeper_url=https://archive.apache.org/dist/zookeeper/zookeeper-3.7.2/apache-z
 ---
 ### 🔹 zookeeper → [`📂 main.yml`](./roles/zookeeper/tasks/zookeeper.md)
 - ZooKeeper 설치
+---
+### 🔹 kafka → [`📂 main.yml`](./roles/kafka/tasks/kafka.md)
+- Kafka 설치
+---
 <br>
 
 ## 🧪 실행 방법
@@ -317,7 +351,9 @@ multi-server-setup-ansible/
     ├── docker/
     │   ├── handlers/main.yml
     │   └── tasks/main.yml
-    └── zookeeper/
+    ├── zookeeper/
+    │   └── tasks/main.yml
+    └── kafka/
          └── tasks/main.yml
 ```
 ---

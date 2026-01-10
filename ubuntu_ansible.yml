@@ -67,4 +67,18 @@
     ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
 
   roles:
-    - zookeeper
+#    - zookeeper
+
+# =====================================================
+# Kafka Servers
+# =====================================================
+- name: "[ Kafka_Servers Settings.. ]"
+  hosts: Kafka_Servers
+  become: true
+  gather_facts: false
+
+  vars:
+    ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
+
+  roles:
+    - kafka

@@ -1,0 +1,65 @@
+# -----------------------------------------------------
+# 1. Kafka 설치 디렉토리 생성
+# -----------------------------------------------------
+- name: "Create Kafka install directory"
+  file:
+    path: "{{ kafka_install_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+# -----------------------------------------------------
+# 2. Kafka 다운로드
+# -----------------------------------------------------
+- name: "Download Kafka"
+  get_url:
+    url: "{{ kafka_url }}"
+    dest: "/tmp/{{ kafka_url | basename }}"
+    mode: '0644'
+
+# -----------------------------------------------------
+# 3. Kafka 압축 해제
+# -----------------------------------------------------
+- name: "Extract Kafka"
+  unarchive:
+    src: "/tmp/{{ kafka_url | basename }}"
+    dest: "{{ kafka_install_dir }}"
+    remote_src: yes
+    creates: "{{ kafka_install_dir }}/{{ (kafka_url | basename) | regex_replace('.tgz','') }}"
+
+# -----------------------------------------------------
+# 4. Kafka 심볼릭 링크 생성
+# -----------------------------------------------------
+- name: "Create Kafka symlink"
+  file:
+    src: "{{ kafka_install_dir }}/{{ (kafka_url | basename) | regex_replace('.tgz','') }}"
+    dest: "{{ kafka_install_dir }}/kafka"
+    state: link
+    force: yes
+
+# -----------------------------------------------------
+# 5. Kafka 로그 디렉토리 생성
+# -----------------------------------------------------
+- name: "Create Kafka log directory"
+  file:
+    path: "{{ kafka_log_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+# -----------------------------------------------------
+# 6. Kafka 설치 검증
+# -----------------------------------------------------
+- name: "Check Kafka start script"
+  stat:
+    path: "{{ kafka_install_dir }}/kafka/bin/kafka-server-start.sh"
+  register: kafka_bin_check
+
+- name: "Verify Kafka installation"
+  assert:
+    that:
+      - kafka_bin_check.stat.exists
+    success_msg: "Good!.. | Kafka installed successfully ({{ kafka_install_dir }}/kafka)"
+    fail_msg: "ERROR!.. | Kafka binary not found. Check download or extraction."
