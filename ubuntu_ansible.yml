@@ -8,7 +8,7 @@
   gather_facts: false
 
   roles:
-    - control
+#    - control
 
 # =====================================================
 # Ubuntu Servers
@@ -39,4 +39,18 @@
 #    - package_update_lock
 #    - bash_common
 #    - ssh_keygen
-    - etc_hosts
+#    - etc_hosts
+
+# =====================================================
+# Docker Servers
+# =====================================================
+- name: "[ Docker_Servers Settings.. ]"
+  hosts: Docker_Servers
+  become: true
+  gather_facts: true
+
+  vars:
+    ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
+
+  roles:
+    - docker

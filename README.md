@@ -40,11 +40,17 @@ ansible --version
 
 ## 🖥 인벤토리 ( host.ini )
 ```bash
+# -------------------------------------------------
+# Ubuntu 공통 서버 그룹
+# -------------------------------------------------
 [Ubuntu_Servers]
 ap   ansible_host=192.168.56.60
 s1   ansible_host=192.168.56.61
 s2   ansible_host=192.168.56.62
 
+# -------------------------------------------------
+# Ubuntu 공통 변수
+# -------------------------------------------------
 [Ubuntu_Servers:vars]
 ansible_user=vagrant
 ansible_ssh_pass=vagrant
@@ -60,6 +66,22 @@ java_version=11
 
 # job_project 환경 변수
 job_project_envs=JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64;KAFKA_HOME=/application/kafka;ZOOKEEPER_HOME=/application/zookeeper;HADOOP_HOME=/application/hadoop;HADOOP_COMMON_HOME=$HADOOP_HOME;HADOOP_MAPRED_HOME=$HADOOP_HOME;HADOOP_HDFS_HOME=$HADOOP_HOME;HADOOP_YARN_HOME=$HADOOP_HOME;HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop;HADOOP_LOG_DIR=/logs/hadoop;HADOOP_PID_DIR=/var/run/hadoop/hdfs;HADOOP_COMMON_LIB_NATIVE_DIR=$HADOOP_HOME/lib/native;HADOOP_OPTS=-Djava.library.path=$HADOOP_COMMON_LIB_NATIVE_DIR;HIVE_HOME=/application/hive;HIVE_AUX_JARS_PATH=$HIVE_HOME/aux;PATH=$JAVA_HOME/bin:$HADOOP_HOME/sbin:$HADOOP_HOME/bin:$HIVE_HOME/bin:$HIVE_AUX_JARS_PATH/bin:$KAFKA_HOME/bin:$ZOOKEEPER_HOME/bin:$PATH
+
+
+# -------------------------------------------------
+# Docker 서버 그룹
+# ------------------------------------------------
+[Docker_Servers]
+ap
+s1
+s2
+
+
+# -------------------------------------------------
+# Docker 전용 변수
+# -------------------------------------------------
+[Docker_Servers:vars]
+docker_data_root=/docker
 ```
 ---
 <br>
@@ -108,6 +130,20 @@ job_project_envs=JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64;KAFKA_HOME=/applic
     - bash_common
     - ssh_keygen
     - etc_hosts
+
+# =====================================================
+# Docker Servers
+# =====================================================
+- name: "[ Docker_Servers Settings.. ]"
+  hosts: Docker_Servers
+  become: true
+  gather_facts: true
+
+  vars:
+    ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
+
+  roles:
+    - docker
 ```
 ---
 <br>
@@ -183,6 +219,9 @@ job_project_envs=JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64;KAFKA_HOME=/applic
 ### 🔹 etc_hosts → [`📂 main.yml`](./roles/etc_hosts/tasks/etc_hosts.md)
 - 인벤토리 기반 `/etc/hosts` 파일 자동 생성
 ---
+### 🔹 docker → [`📂 main.yml`](./roles/docker/tasks/docker.md)
+- Docker Engine 공식 저장소 기반 설치
+---
 <br>
 
 ## 🧪 실행 방법
@@ -240,7 +279,10 @@ multi-server-setup-ansible/
     │   └── tasks/main.yml
     ├── ssh_keygen/
     │   └── tasks/main.yml
-    └── etc_hosts/
+    ├── etc_hosts/
+    │   └── tasks/main.yml
+    └── docker/
+        ├── handlers/main.yml
         └── tasks/main.yml
 ```
 ---
