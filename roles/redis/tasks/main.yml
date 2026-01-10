@@ -1,0 +1,45 @@
+# -----------------------------------------------------
+# 1. Redis 데이터 디렉토리 생성
+# -----------------------------------------------------
+- name: "Create Redis data directory"
+  file:
+    path: "{{ redis_data }}"
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+# -----------------------------------------------------
+# 2. Redis 컨테이너 실행
+# -----------------------------------------------------
+- name: "Run Redis container"
+  docker_container:
+    name: "{{ redis_container }}"
+    image: redis:7
+    state: started
+    restart_policy: unless-stopped
+    published_ports:
+      - "{{ redis_port }}:{{ redis_port }}"
+    volumes:
+      - "{{ redis_data }}:/data"
+    command: >
+      redis-server
+      --requirepass {{ redis_pass }}
+      --appendonly no
+      --save 600 1
+    recreate: no
+
+# -----------------------------------------------------
+# 3. Redis 컨테이너 상태 검증
+# -----------------------------------------------------
+- name: "Verify Redis container is running"
+  shell: "docker ps --filter 'name={{ redis_container }}' --filter 'status=running' --format '{{\"{{.Names}}\"}}'"
+  register: redis_ps
+  changed_when: false
+
+- name: "Assert Redis container running"
+  assert:
+    that:
+      - "'{{ redis_container }}' in redis_ps.stdout"
+    success_msg: "Good!.. | Redis container '{{ redis_container }}' is running"
+    fail_msg: "ERROR!.. | Redis container '{{ redis_container }}' is NOT running"

@@ -60,6 +60,8 @@ root_password="1234"
 
 # 설치할 기본 패키지 목록
 install_packages=net-tools,python3-pip
+# 설치할 Python 패키지 목록
+pip_packages=docker
 
 # 설치할 자바 버전
 java_version=11
@@ -115,6 +117,22 @@ s2
 kafka_install_dir=/application
 kafka_log_dir=/logs/kafka_log
 kafka_url=https://archive.apache.org/dist/kafka/3.6.2/kafka_2.13-3.6.2.tgz
+
+
+# -------------------------------------------------
+# Redis 서버 그룹
+# -------------------------------------------------
+[Redis_Servers]
+ap
+
+# -------------------------------------------------
+# Redis 공통 변수
+# -------------------------------------------------
+[Redis_Servers:vars]
+redis_data=/application/redis_data
+redis_port=6379
+redis_pass=1234
+redis_container=job_redis
 ```
 ---
 <br>
@@ -205,6 +223,20 @@ kafka_url=https://archive.apache.org/dist/kafka/3.6.2/kafka_2.13-3.6.2.tgz
 
   roles:
     - kafka
+
+# =====================================================
+# Redis Servers
+# =====================================================
+- name: "[ Redis_Servers Settings.. ]"
+  hosts: Redis_Servers
+  become: true
+  gather_facts: false
+
+  vars:
+    ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
+
+  roles:
+    - redis
 ```
 ---
 <br>
@@ -220,6 +252,10 @@ kafka_url=https://archive.apache.org/dist/kafka/3.6.2/kafka_2.13-3.6.2.tgz
 ### 🔹 packages → [`📂 main.yml`](./roles/packages/tasks/packages.md)
 - 공통 필수 패키지 설치
 - install_packages 변수 기반 동적 설치
+---
+### 🔹 pip_packages → [`📂 main.yml`](./roles/pip_packages/tasks/pip_packages.md)
+- Python 패키지 설치 및 설치 검증
+- pip_packages 변수 기반 동적 설치
 ---
 ### 🔹 nicname → [`📂 main.yml`](./roles/nicname/tasks/nicname.md)
 - 네트워크 인터페이스 이름 통일
@@ -289,6 +325,9 @@ kafka_url=https://archive.apache.org/dist/kafka/3.6.2/kafka_2.13-3.6.2.tgz
 ### 🔹 kafka → [`📂 main.yml`](./roles/kafka/tasks/kafka.md)
 - Kafka 설치
 ---
+### redis → [`📂 main.yml`](./roles/redis/tasks/main.yml)
+- Redis 데이터 디렉토리 생성 및 Docker 컨테이너 실행
+---
 <br>
 
 ## 🧪 실행 방법
@@ -325,6 +364,8 @@ multi-server-setup-ansible/
     │   └── tasks/main.yml
     ├── packages/
     │   └── tasks/main.yml
+    ├── pip_packages/
+    │   └── tasks/main.yml
     ├── ssh_root_login/
     │   ├── handlers/main.yml
     │   └── tasks/main.yml
@@ -353,7 +394,9 @@ multi-server-setup-ansible/
     │   └── tasks/main.yml
     ├── zookeeper/
     │   └── tasks/main.yml
-    └── kafka/
-         └── tasks/main.yml
+    ├── kafka/
+    │   └── tasks/main.yml
+    └── redis/
+        └── tasks/main.yml
 ```
 ---

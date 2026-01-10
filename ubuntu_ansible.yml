@@ -24,6 +24,7 @@
   roles:
 #    - root_password
 #    - packages
+#    - pip_packages
 #    - nicname
 #    - cloud_init
 #    - ufw
@@ -81,4 +82,18 @@
     ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
 
   roles:
-    - kafka
+#    - kafka
+
+# =====================================================
+# Redis Servers
+# =====================================================
+- name: "[ Redis_Servers Settings.. ]"
+  hosts: Redis_Servers
+  become: true
+  gather_facts: false
+
+  vars:
+    ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
+
+  roles:
+    - redis
