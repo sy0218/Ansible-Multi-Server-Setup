@@ -1,0 +1,46 @@
+# -----------------------------------------------------
+# 1. node_export 설치 디렉토리 생성
+# -----------------------------------------------------
+- name: "Create node_export base directory"
+  file:
+    path: "{{ ne_install_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+# -----------------------------------------------------
+# 2. node_export 다운로드
+# -----------------------------------------------------
+- name: "Download node_export"
+  get_url:
+    url: "{{ ne_url }}"
+    dest: "/tmp/{{ ne_url | basename }}"
+    mode: '0644'
+    force: no   # 이미 존재하면 재다운로드 안 함
+
+# -----------------------------------------------------
+# 3. node_export 압축 해제
+# -----------------------------------------------------
+- name: "Extract node_export"
+  unarchive:
+    src: "/tmp/{{ ne_url | basename }}"
+    dest: "{{ ne_install_dir }}"
+    remote_src: yes
+    creates: "{{ ne_install_dir }}/{{ (ne_url | basename) | regex_replace('.tar.gz','') }}"
+    # 이미 압축 풀려있으면 실행 안 함 (멱등성 보장)
+
+# -----------------------------------------------------
+# 4. node_export 설치 검증
+# -----------------------------------------------------
+- name: "Check Node Exporter binary existence"
+  stat:
+    path: "{{ ne_install_dir }}/{{ (ne_url | basename) | regex_replace('.tar.gz','') }}/node_exporter"
+  register: ne_bin_check
+
+- name: "Verify Node Exporter Installation"
+  assert:
+    that:
+      - ne_bin_check.stat.exists
+    fail_msg: "Node Exporter binary not found at {{ ne_install_dir }}/{{ (ne_url | basename) | regex_replace('.tar.gz','') }}/node_exporter. Please check extraction."
+    success_msg: "Node Exporter installation verified: Binary exists at the expected path."

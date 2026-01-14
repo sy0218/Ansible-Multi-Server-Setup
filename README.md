@@ -70,6 +70,10 @@ pip_packages=docker
 # 설치할 자바 버전
 java_version=11
 
+# node export
+ne_install_dir=/application
+ne_url=https://github.com/prometheus/node_exporter/releases/download/v1.7.0/node_exporter-1.7.0.linux-amd64.tar.gz
+
 # job_project 환경 변수
 job_project_envs=JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64;KAFKA_HOME=/application/kafka;ZOOKEEPER_HOME=/application/zookeeper;HADOOP_HOME=/application/hadoop;HADOOP_COMMON_HOME=$HADOOP_HOME;HADOOP_MAPRED_HOME=$HADOOP_HOME;HADOOP_HDFS_HOME=$HADOOP_HOME;HADOOP_YARN_HOME=$HADOOP_HOME;HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop;HADOOP_LOG_DIR=/logs/hadoop;HADOOP_PID_DIR=/var/run/hadoop/hdfs;HADOOP_COMMON_LIB_NATIVE_DIR=$HADOOP_HOME/lib/native;HADOOP_OPTS=-Djava.library.path=$HADOOP_COMMON_LIB_NATIVE_DIR;HIVE_HOME=/application/hive;HIVE_AUX_JARS_PATH=$HIVE_HOME/aux;PATH=$JAVA_HOME/bin:$HADOOP_HOME/sbin:$HADOOP_HOME/bin:$HIVE_HOME/bin:$HIVE_AUX_JARS_PATH/bin:$KAFKA_HOME/bin:$ZOOKEEPER_HOME/bin:$PATH
 
@@ -179,6 +183,7 @@ redis_container=job_redis
     - open_files
     - logrotate
     - shell_default
+    - node_export
     - java
     - package_version_lock
     - package_update_lock
@@ -296,6 +301,9 @@ redis_container=job_redis
 - 시스템 기본 `/bin/sh` 설정 변경
 - dash 비활성화 및 bash 기본 shell 적용
 ---
+### 🔹 node_exporter → [`📂 main.yml`](./roles/node_export/tasks/node_exporter.md)
+- Prometheus Node Exporter 설치
+---
 ### 🔹 java → [`📂 main.yml`](./roles/java/tasks/java.md)
 - host.ini 변수 기반 Java 버전 선택 설치
 - OpenJDK 8 / 11 / 17 / 21 유연한 적용
@@ -382,6 +390,8 @@ multi-server-setup-ansible/
     ├── shell_default/
     │   └── tasks/main.yml
     ├── java/
+    │   └── tasks/main.yml
+    ├── node_exporter/
     │   └── tasks/main.yml
     ├── bash_common/
     │   └── tasks/main.yml
