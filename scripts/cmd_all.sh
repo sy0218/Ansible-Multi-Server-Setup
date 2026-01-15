@@ -10,7 +10,7 @@ fi
 CMD="$1"
 
 ## 전역변수 ##
-SERVERS=(ap s1 s2)
+SERVERS=(s1 s2)
 
 ## CMD 실행 ###
 for SERVER in "${SERVERS[@]}";

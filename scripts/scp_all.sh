@@ -12,7 +12,6 @@ DST_PATH="$2"
 
 ## 전역변수 ##
 SERVERS=(
-    ap
     s1
     s2
 )
