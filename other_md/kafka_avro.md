@@ -170,6 +170,14 @@ curl http://192.168.56.60:8081/subjects
 ```bash
 curl http://192.168.56.60:8081/subjects/job_header_topic-value/versions/latest
 ```
+- 스키마 삭제
+```bash
+# value 스키마
+curl -XDELETE http://localhost:8081/subjects/job_header_topic-value?permanent=true
+
+# key 스키마
+curl -XDELETE http://localhost:8081/subjects/job_header_topic-key?permanent=true
+```
 ---
 <br>
 

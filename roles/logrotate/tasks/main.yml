@@ -47,7 +47,7 @@
 - name: "Assert.. logrotate configuration is correctly set"
   assert:
     that:
-      - "'monthly' in lookup('file', '/etc/logrotate.conf')"
+      - "'weekly' in lookup('file', '/etc/logrotate.conf')"
       - "'rotate 4' in lookup('file', '/etc/logrotate.conf')"
       - "'create' in lookup('file', '/etc/logrotate.conf')"
       - "'su root adm' in lookup('file', '/etc/logrotate.conf')"
