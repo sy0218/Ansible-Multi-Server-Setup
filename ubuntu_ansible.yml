@@ -37,6 +37,7 @@
 #    - shell_default
 #    - node_export
 #    - java
+#    - disable_swap
 #    - package_version_lock
 #    - package_update_lock
 #    - bash_common
@@ -125,4 +126,4 @@
     ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
 
   roles:
-    - redis
+#    - redis

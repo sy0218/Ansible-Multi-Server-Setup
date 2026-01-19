@@ -241,6 +241,7 @@ redis_container=job_redis
     - shell_default
     - node_export
     - java
+    - disable_swap
     - package_version_lock
     - package_update_lock
     - bash_common
@@ -392,6 +393,10 @@ redis_container=job_redis
 - host.ini 변수 기반 Java 버전 선택 설치
 - OpenJDK 8 / 11 / 17 / 21 유연한 적용
 ---
+### 🔹 disable_swap → [`📂 main.yml`](./roles/disable_swap/tasks/main.md)
+- 시스템 Swap 비활성화
+- 재부팅 후에도 swap 자동 활성화 방지
+---
 ### 🔹 package_version_lock → [`📂 main.yml`](./roles/package_version_lock/tasks/package_version_lock.md)
 - 커널(Kernel) 및 Java 패키지 버전 고정
 ---
@@ -480,6 +485,8 @@ multi-server-setup-ansible/
     ├── shell_default/
     │   └── tasks/main.yml
     ├── java/
+    │   └── tasks/main.yml
+    ├── disable_swap/
     │   └── tasks/main.yml
     ├── node_export/
     │   └── tasks/main.yml

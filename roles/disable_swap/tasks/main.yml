@@ -1,0 +1,33 @@
+# -----------------------------------------------------
+# 스왑(Swap) 비활성화
+# -----------------------------------------------------
+
+# Swap 끄기 (멱등성, 이미 꺼져 있어도 안전)
+- name: "Disable all swap"
+  command: swapoff -a
+  become: true
+  changed_when: false
+
+# fstab에서 swap 주석 처리 (재부팅 시 활성화 방지)
+- name: "Comment out swap in /etc/fstab if not already"
+  replace:
+    path: /etc/fstab
+    regexp: '^([^#].*swap.*)$'
+    replace: '# \1'
+  become: true
+  register: fstab_update
+  changed_when: fstab_update.changed
+
+# Swap 비활성화 검증
+- name: "Check active swap devices"
+  command: swapon --noheadings
+  register: swap_status
+  changed_when: false
+  become: true
+
+- name: "Assert swap is disabled"
+  assert:
+    that:
+      - swap_status.stdout_lines | length == 0
+    success_msg: "Good!.. | Swap is disabled"
+    fail_msg: "ERROR!.. | Swap is still enabled"
