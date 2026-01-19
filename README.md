@@ -393,7 +393,7 @@ redis_container=job_redis
 - host.ini 변수 기반 Java 버전 선택 설치
 - OpenJDK 8 / 11 / 17 / 21 유연한 적용
 ---
-### 🔹 disable_swap → [`📂 main.yml`](./roles/disable_swap/tasks/main.md)
+### 🔹 disable_swap → [`📂 main.yml`](./roles/disable_swap/tasks/disable_swap.md)
 - 시스템 Swap 비활성화
 - 재부팅 후에도 swap 자동 활성화 방지
 ---
