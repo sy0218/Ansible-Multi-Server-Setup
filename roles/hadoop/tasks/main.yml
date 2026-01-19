@@ -1,0 +1,55 @@
+# -----------------------------------------------------
+# 1. Hadoop 설치 디렉토리 생성
+# -----------------------------------------------------
+- name: "Create Hadoop install directory"
+  file:
+    path: "{{ hadoop_install_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+# -----------------------------------------------------
+# 2. Hadoop 다운로드
+# -----------------------------------------------------
+- name: "Download Hadoop"
+  get_url:
+    url: "{{ hadoop_url }}"
+    dest: "/tmp/{{ hadoop_url | basename }}"
+    mode: '0644'
+    force: no
+
+# -----------------------------------------------------
+# 3. Hadoop 압축 해제
+# -----------------------------------------------------
+- name: "Extract Hadoop"
+  unarchive:
+    src: "/tmp/{{ hadoop_url | basename }}"
+    dest: "{{ hadoop_install_dir }}"
+    remote_src: yes
+    creates: "{{ hadoop_install_dir }}/{{ (hadoop_url | basename) | regex_replace('.tar.gz','') }}"
+
+# -----------------------------------------------------
+# 4. Hadoop 심볼릭 링크 생성
+# -----------------------------------------------------
+- name: "Create Hadoop symlink"
+  file:
+    src: "{{ hadoop_install_dir }}/{{ (hadoop_url | basename) | regex_replace('.tar.gz','') }}"
+    dest: "{{ hadoop_install_dir }}/hadoop"
+    state: link
+    force: yes
+
+# -----------------------------------------------------
+# 5. Hadoop 설치 검증
+# -----------------------------------------------------
+- name: "Check Hadoop binary"
+  stat:
+    path: "{{ hadoop_install_dir }}/hadoop/bin/hadoop"
+  register: hadoop_bin_check
+
+- name: "Verify Hadoop installation"
+  assert:
+    that:
+      - hadoop_bin_check.stat.exists
+    success_msg: "Good!.. | Hadoop installed successfully ({{ hadoop_install_dir }}/hadoop)"
+    fail_msg: "ERROR!.. | Hadoop binary not found. Check download or extraction."

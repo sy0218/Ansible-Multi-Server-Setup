@@ -8,7 +8,7 @@
   gather_facts: false
 
   roles:
-#    - control
+    - control
 
 # =====================================================
 # Ubuntu Servers
@@ -22,26 +22,26 @@
     ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
 
   roles:
-#    - root_password
-#    - packages
-#    - pip_packages
-#    - nicname
-#    - cloud_init
-#    - ufw
-#    - locale_ko
-#    - ssh_root_login
-#    - timezone
-#    - ntp
-#    - open_files
-#    - logrotate
-#    - shell_default
+    - root_password
+    - packages
+    - pip_packages
+    - nicname
+    - cloud_init
+    - ufw
+    - locale_ko
+    - ssh_root_login
+    - timezone
+    - ntp
+    - open_files
+    - logrotate
+    - shell_default
     - node_export
-#    - java
-#    - package_version_lock
-#    - package_update_lock
-#    - bash_common
-#    - ssh_keygen
-#    - etc_hosts
+    - java
+    - package_version_lock
+    - package_update_lock
+    - bash_common
+    - ssh_keygen
+    - etc_hosts
 
 # =====================================================
 # Docker Servers
@@ -55,7 +55,7 @@
     ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
 
   roles:
-#    - docker
+    - docker
 
 # =====================================================
 # Zookeeper Servers
@@ -69,7 +69,7 @@
     ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
 
   roles:
-#    - zookeeper
+    - zookeeper
 
 # =====================================================
 # Kafka Servers
@@ -83,7 +83,35 @@
     ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
 
   roles:
-#    - kafka
+    - kafka
+
+# =====================================================
+# Hadoop Servers
+# =====================================================
+- name: "[ Hadoop_Servers Settings.. ]"
+  hosts: Hadoop_Servers
+  become: true
+  gather_facts: false
+
+  vars:
+    ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
+
+  roles:
+    - hadoop
+
+# =====================================================
+# Elasticsearch Servers
+# =====================================================
+- name: "[ Elasticsearch_Servers Settings.. ]"
+  hosts: Elasticsearch_Servers
+  become: true
+  gather_facts: false
+
+  vars:
+    ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
+
+  roles:
+    - elasticsearch
 
 # =====================================================
 # Redis Servers
@@ -97,4 +125,4 @@
     ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
 
   roles:
-#    - redis
+    - redis

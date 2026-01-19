@@ -1,0 +1,50 @@
+# -----------------------------------------------------
+# 1. Elasticsearch APT GPG Key 등록
+# -----------------------------------------------------
+- name: "Add Elasticsearch GPG key"
+  apt_key:
+    url: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+    state: present
+
+# -----------------------------------------------------
+# 2. Elasticsearch APT repository 추가
+# -----------------------------------------------------
+- name: "Add Elasticsearch APT repository"
+  apt_repository:
+    repo: "deb https://artifacts.elastic.co/packages/{{ elasticsearch_version.split('.')[0] }}.x/apt stable main"
+    state: present
+    filename: "elastic-{{ elasticsearch_version.split('.')[0] }}.x"
+  register: elastic_repo
+
+# -----------------------------------------------------
+# 3. APT cache 업데이트 (repo 변경 시에만)
+# -----------------------------------------------------
+- name: "Update apt cache if repo changed"
+  apt:
+    update_cache: yes
+  when: elastic_repo.changed
+
+# -----------------------------------------------------
+# 4. Elasticsearch 설치
+# -----------------------------------------------------
+- name: "Install Elasticsearch {{ elasticsearch_version }}"
+  apt:
+    name: "elasticsearch={{ elasticsearch_version }}"
+    state: present
+
+# -----------------------------------------------------
+# 5. Elasticsearch 설치 검증
+# -----------------------------------------------------
+
+- name: "Get Elasticsearch version"
+  command: /usr/share/elasticsearch/bin/elasticsearch --version
+  register: es_version_check
+  changed_when: false
+  failed_when: false   # assert에서 실패 처리
+
+- name: "Verify Elasticsearch installation"
+  assert:
+    that:
+      - "'{{ elasticsearch_version }}' in es_version_check.stdout"
+    success_msg: "Good!.. | Elasticsearch {{ elasticsearch_version }} installed successfully"
+    fail_msg: "ERROR!.. | Elasticsearch version mismatch or not installed"
