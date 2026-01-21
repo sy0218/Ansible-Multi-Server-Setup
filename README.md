@@ -196,6 +196,24 @@ redis_port=6379
 redis_pass=1234
 redis_container=job_redis
 ###################################################
+
+###################################################
+# -------------------------------------------------
+# PostgreSQL 서버 그룹
+# -------------------------------------------------
+[PostgreSQL_Servers]
+ap
+
+# -------------------------------------------------
+# PostgreSQL 공통 변수
+# -------------------------------------------------
+[PostgreSQL_Servers:vars]
+pg_data=/Data_project_job/docker_image/postgres/pgdata
+pg_port=5432
+pg_pass=1234
+pg_container=job_postgres
+pg_version=14
+###################################################
 ```
 ---
 <br>
@@ -331,6 +349,20 @@ redis_container=job_redis
 
   roles:
     - redis
+
+# =====================================================
+# PostgreSQL Servers
+# =====================================================
+- name: "[ PostgreSQL_Servers Settings ]"
+  hosts: PostgreSQL_Servers
+  become: true
+  gather_facts: false
+
+  vars:
+    ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
+
+  roles:
+    - postgresql
 ```
 ---
 <br>
@@ -426,14 +458,17 @@ redis_container=job_redis
 ### 🔹 kafka → [`📂 main.yml`](./roles/kafka/tasks/kafka.md)
 - Kafka 설치
 ---
-### 🔹 redis → [`📂 main.yml`](./roles/redis/tasks/main.yml)
+### 🔹 redis → [`📂 main.yml`](./roles/redis/tasks/redis.md)
 - Redis 데이터 디렉토리 생성 및 Docker 컨테이너 실행
 ---
-### 🔹 hadoop → [`📂 main.yml`](./roles/hadoop/tasks/main.yml)
+### 🔹 hadoop → [`📂 main.yml`](./roles/hadoop/tasks/hadoop.md)
 - Hadoop 설치
 ---
-### 🔹 elasticsearch → [`📂 main.yml`](./roles/elasticsearch/tasks/main.yml)
+### 🔹 elasticsearch → [`📂 main.yml`](./roles/elasticsearch/tasks/elasticsearch.md)
 - Elasticsearch APT 기반 설치
+---
+### 🔹 postgresql → [`📂 main.yml`](./roles/postgresql/tasks/postgresql.md)
+- PostgreSQL Docker 컨테이너 설치 및 실행
 ---
 <br>
 
@@ -508,6 +543,8 @@ multi-server-setup-ansible/
     ├── kafka/
     │   └── tasks/main.yml
     ├── redis/
+    │   └── tasks/main.yml
+    ├── postgresql/
     │   └── tasks/main.yml
     ├── hadoop/
     │   └── tasks/main.yml

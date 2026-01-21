@@ -127,3 +127,17 @@
 
   roles:
 #    - redis
+
+# =====================================================
+# PostgreSQL Servers
+# =====================================================
+- name: "[ PostgreSQL_Servers Settings ]"
+  hosts: PostgreSQL_Servers
+  become: true
+  gather_facts: false
+
+  vars:
+    ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
+
+  roles:
+    - postgresql
