@@ -148,6 +148,43 @@ kafka_url=https://archive.apache.org/dist/kafka/3.6.2/kafka_2.13-3.6.2.tgz
 
 ###################################################
 # -------------------------------------------------
+# Filebeat 서버 그룹
+# -------------------------------------------------
+[Filebeat_Servers]
+ap
+sn1
+sn2
+sn3
+m1
+m2
+s1
+
+# -------------------------------------------------
+# Filebeat 공통 변수
+# -------------------------------------------------
+[Filebeat_Servers:vars]
+filebeat_version=8.4.2
+###################################################
+
+###################################################
+# -------------------------------------------------
+# NiFi 서버 그룹
+# -------------------------------------------------
+[NiFi_Servers]
+m1
+m2
+s1
+
+# -------------------------------------------------
+# NiFi 공통 변수
+# -------------------------------------------------
+[NiFi_Servers:vars]
+nifi_install_dir=/application
+nifi_url=https://archive.apache.org/dist/nifi/1.23.0/nifi-1.23.0-bin.zip
+###################################################
+
+###################################################
+# -------------------------------------------------
 # Hadoop 서버 그룹
 # -------------------------------------------------
 [Hadoop_Servers]
@@ -324,6 +361,34 @@ pg_version=14
     - kafka
 
 # =====================================================
+# Filebeat Servers
+# =====================================================
+- name: "[ Filebeat_Servers Settings.. ]"
+  hosts: Filebeat_Servers
+  become: true
+  gather_facts: false
+
+  vars:
+    ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
+
+  roles:
+    - filebeat
+
+# =====================================================
+# NiFi Servers
+# =====================================================
+- name: "[ NiFi_Servers Settings.. ]"
+  hosts: NiFi_Servers
+  become: true
+  gather_facts: false
+
+  vars:
+    ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
+
+  roles:
+    - nifi
+
+# =====================================================
 # Hadoop Servers
 # =====================================================
 - name: "[ Hadoop_Servers Settings.. ]"
@@ -487,6 +552,11 @@ pg_version=14
 ### 🔹 kafka → [`📂 main.yml`](./roles/kafka/tasks/kafka.md)
 - Kafka 설치
 ---
+### 🔹 filebeat → [`📂 main.yml`](./roles/filebeat/tasks/filebeat.md)
+- Filebeat 설치
+---
+### 🔹 nifi → [`📂 main.yml`](./roles/nifi/tasks/nifi.md)
+- NiFi 설치 및 심볼릭 링크 생성
 ### 🔹 redis → [`📂 main.yml`](./roles/redis/tasks/redis.md)
 - Redis 데이터 디렉토리 생성 및 Docker 컨테이너 실행
 ---
@@ -506,11 +576,8 @@ pg_version=14
 
 ## 🧪 실행 방법
 ```bash
-# 사전 검증
-ansible-playbook -i host.ini ubuntu_ansible.yml --check
-
 # 실행
-ansible-playbook -i host.ini ubuntu_ansible.yml
+ansible-playbook -i host.ini ubuntu_ansible.yml -e 'ansible_remote_tmp=/tmp/ansible_tmp'
 ```
 ---
 <br>
@@ -573,6 +640,10 @@ multi-server-setup-ansible/
     ├── zookeeper/
     │   └── tasks/main.yml
     ├── kafka/
+    │   └── tasks/main.yml
+    ├── filebeat/
+    │   └── tasks/main.yml
+    ├── nifi/
     │   └── tasks/main.yml
     ├── redis/
     │   └── tasks/main.yml

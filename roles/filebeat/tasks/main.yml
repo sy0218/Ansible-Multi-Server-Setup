@@ -1,0 +1,49 @@
+# -----------------------------------------------------
+# 1. Filebeat APT GPG Key 등록
+# -----------------------------------------------------
+- name: "Add Filebeat GPG key"
+  apt_key:
+    url: https://artifacts.elastic.co/GPG-KEY-elasticsearch
+    state: present
+
+# -----------------------------------------------------
+# 2. Filebeat APT repository 추가
+# -----------------------------------------------------
+- name: "Add Filebeat APT repository"
+  apt_repository:
+    repo: "deb [signed-by=/usr/share/keyrings/elastic-keyring.gpg] https://artifacts.elastic.co/packages/8.x/apt stable main"
+    state: present
+    filename: "elastic-8.x"
+  register: filebeat_repo
+
+# -----------------------------------------------------
+# 3. APT cache 업데이트 (repo 변경 시에만)
+# -----------------------------------------------------
+- name: "Update apt cache if repo changed"
+  apt:
+    update_cache: yes
+  when: filebeat_repo.changed
+
+# -----------------------------------------------------
+# 4. Filebeat 설치
+# -----------------------------------------------------
+- name: "Install Filebeat {{ filebeat_version }}"
+  apt:
+    name: "filebeat={{ filebeat_version }}"
+    state: present
+
+# -----------------------------------------------------
+# 5. Filebeat 설치 검증
+# -----------------------------------------------------
+- name: "Get Filebeat version"
+  command: filebeat version
+  register: filebeat_version_check
+  changed_when: false
+  failed_when: false
+
+- name: "Verify Filebeat installation"
+  assert:
+    that:
+      - "'{{ filebeat_version }}' in filebeat_version_check.stdout"
+    success_msg: "Good!.. | Filebeat {{ filebeat_version }} installed successfully"
+    fail_msg: "ERROR!.. | Filebeat version mismatch or not installed"

@@ -1,4 +1,11 @@
+# Docker 전용 핸들러
 - name: Restart Docker
   systemd:
     name: docker
+    state: restarted
+
+# containerd 전용 핸들러
+- name: Restart containerd
+  systemd:
+    name: containerd
     state: restarted

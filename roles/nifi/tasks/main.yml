@@ -1,0 +1,55 @@
+# -----------------------------------------------------
+# 1. NiFi 설치 디렉토리 생성
+# -----------------------------------------------------
+- name: "Create NiFi install directory"
+  file:
+    path: "{{ nifi_install_dir }}"
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+
+# -----------------------------------------------------
+# 2. NiFi 다운로드
+# -----------------------------------------------------
+- name: "Download NiFi"
+  get_url:
+    url: "{{ nifi_url }}"
+    dest: "/tmp/{{ nifi_url | basename }}"
+    mode: '0644'
+    force: no
+
+# -----------------------------------------------------
+# 3. NiFi 압축 해제
+# -----------------------------------------------------
+- name: "Extract NiFi"
+  unarchive:
+    src: "/tmp/{{ nifi_url | basename }}"
+    dest: "{{ nifi_install_dir }}"
+    remote_src: yes
+    creates: "{{ nifi_install_dir }}/{{ (nifi_url | basename) | regex_replace('.zip','') }}"
+
+# -----------------------------------------------------
+# 4. NiFi 심볼릭 링크 생성
+# -----------------------------------------------------
+- name: "Create NiFi symlink"
+  file:
+    src: "{{ nifi_install_dir }}/{{ (nifi_url | basename) | regex_replace('-bin.zip','') }}"
+    dest: "{{ nifi_install_dir }}/nifi"
+    state: link
+    force: yes
+
+# -----------------------------------------------------
+# 5. NiFi 설치 검증
+# -----------------------------------------------------
+- name: "Check NiFi start script"
+  stat:
+    path: "{{ nifi_install_dir }}/nifi/bin/nifi.sh"
+  register: nifi_bin_check
+
+- name: "Verify NiFi installation"
+  assert:
+    that:
+      - nifi_bin_check.stat.exists
+    success_msg: "Good!.. | NiFi installed successfully ({{ nifi_install_dir }}/nifi)"
+    fail_msg: "ERROR!.. | NiFi binary not found. Check download or extraction."

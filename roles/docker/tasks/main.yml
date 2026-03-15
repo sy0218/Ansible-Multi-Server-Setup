@@ -116,16 +116,58 @@
     state: started
 
 # -----------------------------------------------------
-# 11. Docker 실행 상태 검증
+# 11. containerd 디렉토리 생성
+# -----------------------------------------------------
+- name: "Create containerd directories"
+  file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: '0755'
+  loop:
+    - "{{ containerd_root }}/root"
+    - "{{ containerd_root }}/state"
+
+# -----------------------------------------------------
+# 12. containerd config.toml 설정
+# -----------------------------------------------------
+- name: "Ensure containerd root and state are set in config.toml"
+  blockinfile:
+    path: /etc/containerd/config.toml
+    marker: "# {mark} ANSIBLE CONTAINERD PATHS"
+    block: |
+      [plugins."io.containerd.grpc.v1.cri".containerd]
+      root = "{{ containerd_root }}/root"
+      state = "{{ containerd_root }}/state"
+  notify: Restart containerd
+
+# -----------------------------------------------------
+# 13. containerd 서비스 활성화 및 실행
+# -----------------------------------------------------
+- name: "Ensure containerd service is running"
+  systemd:
+    name: containerd
+    enabled: yes
+    state: restarted
+
+# -----------------------------------------------------
+# 14. 서비스 검증
 # -----------------------------------------------------
 - name: "Check Docker service status"
   command: systemctl is-active docker
   register: docker_status
   changed_when: false
 
-- name: "Assert Docker is running"
+- name: "Check containerd service status"
+  command: systemctl is-active containerd
+  register: containerd_status
+  changed_when: false
+
+- name: "Assert both services are running"
   assert:
     that:
       - docker_status.stdout == "active"
-    success_msg: "Good!.. | Docker service is running"
-    fail_msg: "ERROR!.. | Docker service is NOT running"
+      - containerd_status.stdout == "active"
+    success_msg: "Good!.. | Docker & containerd services are running"
+    fail_msg: "ERROR!.. | Docker or containerd service is NOT running"

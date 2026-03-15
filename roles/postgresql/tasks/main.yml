@@ -24,7 +24,7 @@
     volumes:
       - "{{ pg_data }}:/var/lib/postgresql/data"
     env:
-      POSTGRES_PASSWORD: "{{ pg_pass }}"
+      POSTGRES_PASSWORD: "{{ pg_pass | string }}"
     recreate: no
   register: pg_container_result
 
