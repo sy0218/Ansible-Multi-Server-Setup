@@ -18,6 +18,6 @@ run_cmd() {
 log "===== START ansible start ====="
 
 log "ANSIBLE_HOME: ${ANSIBLE_HOME}"
-run_cmd "ansible-playbook -i ${ANSIBLE_HOME}/host.ini ${ANSIBLE_HOME}/ubuntu_ansible.yml -e 'ansible_remote_tmp=/tmp/ansible_tmp'"
+run_cmd "ansible-playbook -i ${ANSIBLE_HOME}/host.ini ${ANSIBLE_HOME}/ubuntu_ansible.yml -e 'ansible_remote_tmp=/tmp/.ansible_tmp'"
 
 log "===== END ansible end ====="

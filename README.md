@@ -31,11 +31,11 @@ Ansible을 활용해 분산 서버의 OS 및 프레임워크 구성을 자동화
 
 ## 🚀 Ansible 설치 (Control Node)
 >⚠️ **Ansible은 Control Node에만 설치합니다.**
-### 1️⃣ Ansible 설치
+### 1️⃣ Ansible 설치 및 초기 셋업
 ```bash
 /work/jsy/Ansible-Multi-Server-Setup/bin/start_ansible.sh
 ```
-##### 👉 존재하는 스크립트를 통해 설치를 진행하세요
+##### 👉 존재하는 스크립트를 통해 설치 및 초기 셋업을 진행하세요
 ---
 <br>
 
@@ -518,7 +518,7 @@ pg_version=14
 - Control Node에서 password 기반 SSH 통신을 위해 sshpass 설치 밎 검증 수행
 ---
 ### 🔹 root_password → [`📂 main.yml`](./roles/root_password/tasks/root_password.md)
-- root 계정 패스워드 설정
+- root 계정 패스워드 설정 및 검증 수행
 ---
 ### 🔹 packages → [`📂 main.yml`](./roles/packages/tasks/packages.md)
 - 공통 필수 패키지 설치
