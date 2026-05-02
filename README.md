@@ -1,12 +1,10 @@
-# 🛠 multi-server-setup-ansible
+# 🛠 Ansible 기반 표준 서버 구성 자동화 플랫폼
 
-다중 Ubuntu 서버 환경을 대상으로  
-**OS 공통 설정부터 미들웨어 및 데이터 플랫폼까지  
-확장 가능한 인프라 프레임워크를  
-Ansible Role 기반으로 자동화**하는 프로젝트입니다.
+**인프라가 프로비저닝된 환경에서,
+Ansible을 활용해 분산 서버의 OS 및 프레임워크 구성을 자동화하는 프로젝트 입니다.**
 
-본 프로젝트는 단순한 서버 초기화 스크립트가 아니라,
-**재사용·확장·운영 안정성**을 고려한 **표준화된 서버 구성 자동화**를 목표로 합니다.
+단순 초기화가 아닌,
+**재사용·확장성**을 고려한 **표준화된 서버 구성 자동화**를 목표로 합니다.
 
 (Control Node 1대 + Managed Node 다수)
 
@@ -16,7 +14,7 @@ Ansible Role 기반으로 자동화**하는 프로젝트입니다.
 ## 📌 주요 특징
 - 다중 Ubuntu 서버 공통 환경 표준화
 - Role 기반 모듈화 구조 (기능 단위 확장 용이)
-- OS 초기 세팅부터 미들웨어·데이터 플랫폼까지 단계적 구축
+- OS 초기 세팅부터 프레임워크 까지 단계적 구축
 - 재실행에도 안전한 멱등성 보장
 - 인벤토리 기반 중앙 집중형 서버 구성 관리
 
@@ -24,7 +22,7 @@ Ansible Role 기반으로 자동화**하는 프로젝트입니다.
 <br>
 
 ## 🧰 요구 사항
-- OS: Ubuntu ( 우분투 )
+- OS: Ubuntu ( 우분투 22.04 )
 - Control Node 1대
 - Managed Node N대 (SSH 접근 가능)
 
@@ -35,13 +33,9 @@ Ansible Role 기반으로 자동화**하는 프로젝트입니다.
 >⚠️ **Ansible은 Control Node에만 설치합니다.**
 ### 1️⃣ Ansible 설치
 ```bash
-apt update
-apt install -y ansible
+/work/jsy/Ansible-Multi-Server-Setup/bin/start_ansible.sh
 ```
-### 2️⃣ 설치 확인
-```bash
-ansible --version
-```
+##### 👉 존재하는 스크립트를 통해 설치를 진행하세요
 ---
 <br>
 
@@ -52,22 +46,20 @@ ansible --version
 # Ubuntu 공통 서버 그룹
 # -------------------------------------------------
 [Ubuntu_Servers]
-ap   ansible_host=192.168.122.59
-sn1   ansible_host=192.168.122.60
-sn2   ansible_host=192.168.122.61
-sn3   ansible_host=192.168.122.62
-m1   ansible_host=192.168.122.63
-m2   ansible_host=192.168.122.64
-s1   ansible_host=192.168.122.65
+ap   ansible_host=192.168.56.60
+s1   ansible_host=192.168.56.61
+s2   ansible_host=192.168.56.62
 
 # -------------------------------------------------
 # Ubuntu 공통 변수
 # -------------------------------------------------
 [Ubuntu_Servers:vars]
-ansible_user=user
+ansible_user=root
 ansible_ssh_pass=1234
 ansible_become=true
 ansible_become_password=1234
+
+# 설정할 루트 패스워드
 root_password="1234"
 
 # 설치할 기본 패키지 목록
@@ -523,8 +515,7 @@ pg_version=14
 
 ## 🧩 Roles 설명
 ### 🔹 control → [`📂 main.yml`](./roles/control/tasks/control.md)
-- Control Node 기본 설정
-- password 기반 SSH 사용을 위한 sshpass 설치
+- Control Node에서 password 기반 SSH 통신을 위해 sshpass 설치 밎 검증 수행
 ---
 ### 🔹 root_password → [`📂 main.yml`](./roles/root_password/tasks/root_password.md)
 - root 계정 패스워드 설정

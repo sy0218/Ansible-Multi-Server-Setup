@@ -1,73 +1,84 @@
 # 🖥 Control Node 기본 설정 (Ansible)
 
-- Ansible **Control Node**에서  
-password 기반 SSH 통신을 사용하기 위해 필요한 **sshpass 설치 및 검증** 작업을 수행한다.
+- Ansible **Control Node**에서
+  password 기반 SSH 통신을 위해 필요한 **sshpass 설치 및 검증** 작업을 수행한다.
+
 ---
 <br>
 
 ## 🧩 main.yml
-```bash
+```yaml
 # -----------------------------------------------------
 # Control Node 기본 설정
 # -----------------------------------------------------
 
-# sshpass 설치 (password 기반 SSH 통신용)
+# 1. sshpass 설치 여부 확인 (dpkg 기반 체크)
+- name: "Check if sshpass is installed"
+  command: dpkg -l | grep sshpass
+  register: sshpass_installed
+  changed_when: false
+  failed_when: false
+
+# 2. sshpass 설치 (없을 때만 실행)
 - name: "Install sshpass on Control node"
   apt:
     name: sshpass
     state: present
     update_cache: yes
+  when: sshpass_installed.rc != 0
 
-# sshpass 설치 확인
-- name: "Check.. sshpass.."
+# 3. sshpass 버전 확인
+- name: "Verify sshpass version"
   command: sshpass -V
   register: sshpass_check
   changed_when: false
 
-- name: "Status.. sshpass.."
-  debug:
-    msg: "Good!.. | {{ sshpass_check.stdout_lines[0] }} installed successfully.."
+# 4. 설치 검증 (assert)
+- name: "Verify sshpass installation"
+  assert:
+    that:
+      - sshpass_check.rc == 0
+    fail_msg: "[FAIL] sshpass install failed"
+    success_msg: "[SUCCESS] sshpass install verified successfully {{ sshpass_check.stdout | default('no output') }}"
 ```
 ---
 <br>
 
 ## 🛠 작업 내용
-### 1️⃣ sshpass 설치
+### 1️⃣ sshpass 설치 여부 확인
+- dpkg 기반으로 설치 여부 체크
+- 없으면 rc != 0 반환
+```bash
+dpkg -l | grep sshpass
+```
+---
+### 2️⃣ sshpass 설치 ( 조건부 )
+- 설치가 안 되어 있을 때만 실행
+- apt 패키지 설치 + cache 업데이트
+```yaml
+when: sshpass_installed.rc != 0
+```
+---
+### 3️⃣ sshpass 버전 확인
+- 설치 정상 여부 확인
+``` bash
+sshpass -V
+```
+---
+### 4️⃣ assert 검증
+- 설치 성공 여부 최종 검증
+- 실패 시 playbook 즉시 중단
+```yaml
+assert:
+  that:
+    - sshpass_check.rc == 0
+```
 
-```yaml
-- name: "Install sshpass on Control node"
-  apt:
-    name: sshpass
-    state: present
-    update_cache: yes
-```
-- apt 패키지 매니저를 사용하여 sshpass 설치
-- 이미 설치되어 있을 경우 변경 없이 스킵 (멱등성 유지)
----
-### 2️⃣ sshpass 설치 확인
-```yaml
-- name: "Check.. sshpass.."
-  command: sshpass -V
-  register: sshpass_check
-  changed_when: false
-```
-- sshpass -V 명령어로 설치 여부 및 버전 확인
-- 단순 검증 목적이므로 changed_when: false 설정
----
-### 3️⃣ 설치 상태 출력
-``` yaml
-- name: "Status.. sshpass.."
-  debug:
-    msg: "Good!.. | {{ sshpass_check.stdout_lines[0] }} installed successfully.."
-```
-- sshpass 버전 정보를 포함한 성공 메시지 출력
 ---
 <br>
 
 ## ✅ 실행 결과 예시
 ```bash
-TASK [Status.. sshpass..]
-ok: [control-node] => {
-    "msg": "Good!.. | sshpass 1.09 installed successfully.."
-}
+[SUCCESS] sshpass install verified successfully sshpass 1.09
 ```
+---
