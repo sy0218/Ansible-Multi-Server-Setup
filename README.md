@@ -33,7 +33,7 @@ Ansible을 활용해 분산 서버의 OS 및 프레임워크 구성을 자동화
 >⚠️ **Ansible은 Control Node에만 설치합니다.**
 ### 1️⃣ Ansible 설치 및 초기 셋업
 ```bash
-/work/jsy/Ansible-Multi-Server-Setup/bin/start_ansible.sh
+/work/jsy/Ansible-Multi-Server-Setup/bin/ansible_setup.sh
 ```
 ##### 👉 존재하는 스크립트를 통해 설치 및 초기 셋업을 진행하세요
 ---
@@ -634,17 +634,25 @@ pg_version=14
 
 ## 🧪 실행 방법
 ```bash
-# 실행
-ansible-playbook -i host.ini ubuntu_ansible.yml -e 'ansible_remote_tmp=/tmp/ansible_tmp'
+# 사용 방법
+ansible 홈 디렉토리 절대경로를 인자로 전달하여 실행합니다.
+
+예시)
+/work/jsy/Ansible-Multi-Server-Setup/bin/start_ansible.sh /work/jsy/Ansible-Multi-Server-Setup
 ```
+##### 👉 존재하는 스크립트를 통해 실행을 진행하세요
+> ⚠️ **반드시 Ansible 프로젝트의 절대 경로를 인자로 전달해서 실행하세요.**
 ---
 <br>
 
-## 📁 디렉토리 구성도
+## 📁 Ansible 프로젝트 디렉토리 구조
 ```bash
 multi-server-setup-ansible/
 ├── host.ini
 ├── ubuntu_ansible.yml
+├── bin/
+│   ├── ansible_setup.sh
+│   └── start_ansible.sh
 └── roles/
     ├── root_password/
     │   └── tasks/main.yml
@@ -654,68 +662,7 @@ multi-server-setup-ansible/
     │   └── tasks/main.yml
     ├── locale_ko/
     │   └── tasks/main.yml
-    ├── nicname/
-    │   ├── handlers/main.yml
-    │   └── tasks/main.yml
-    ├── ntp/
-    │   └── tasks/main.yml
-    ├── open_files/
-    │   └── tasks/main.yml
-    ├── packages/
-    │   └── tasks/main.yml
-    ├── pip_packages/
-    │   └── tasks/main.yml
-    ├── ssh_root_login/
-    │   ├── handlers/main.yml
-    │   └── tasks/main.yml
-    ├── timezone/
-    │   └── tasks/main.yml
-    ├── ufw/
-    │   └── tasks/main.yml
-    ├── logrotate/
-    │   └── tasks/main.yml
-    ├── shell_default/
-    │   └── tasks/main.yml
-    ├── java/
-    │   └── tasks/main.yml
-    ├── disable_swap/
-    │   └── tasks/main.yml
-    ├── node_export/
-    │   └── tasks/main.yml
-    ├── bash_common/
-    │   └── tasks/main.yml
-    ├── package_version_lock/
-    │   └── tasks/main.yml
-    ├── package_update_lock/
-    │   └── tasks/main.yml
-    ├── ssh_keygen/
-    │   └── tasks/main.yml
-    ├── etc_hosts/
-    │   └── tasks/main.yml
-    ├── docker/
-    │   ├── handlers/main.yml
-    │   └── tasks/main.yml
-    ├── zookeeper/
-    │   └── tasks/main.yml
-    ├── kafka/
-    │   └── tasks/main.yml
-    ├── filebeat/
-    │   └── tasks/main.yml
-    ├── nifi/
-    │   └── tasks/main.yml
-    ├── redis/
-    │   └── tasks/main.yml
-    ├── postgresql/
-    │   └── tasks/main.yml
-    ├── spark/
-    │   └── tasks/main.yml
-    ├── hadoop/
-    │   └── tasks/main.yml
-    ├── hive/
-    │   └── tasks/main.yml
-    ├── elasticsearch/
-    │   └── tasks/main.yml
-    └── kibana/
-        └── tasks/main.yml
 ```
+> **roles/ 디렉토리는 기능별 모듈 구조로 구성되며 각 role은 tasks/main.yml을 기준으로 실행됩니다.**
+
 ---
