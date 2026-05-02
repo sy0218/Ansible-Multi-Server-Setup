@@ -11,6 +11,7 @@
 # Root Password 설정
 # -----------------------------------------------------
 
+# 1. root 패스워드 설정
 - name: "Set Root Password"
   user:
     name: root
@@ -18,17 +19,17 @@
     shell: /bin/bash
   register: root_pw_result
 
-# -----------------------------------------------------
-# Root Password 설정 검증
-# -----------------------------------------------------
-
+# 2. root 패스워드 설정 검증
+# ansible assert → 조건 맞는지 검사, 아니면 실행을 즉시 실패시키는 검증용 도구
 - name: "Assert root password set"
   assert:
     that:
       - root_pw_result is defined
       - not root_pw_result.failed
     fail_msg: "[FAIL] root password set failed"
-    success_msg: "[SUCCESS] root password set verified successfully"
+    success_msg: >
+      [SUCCESS] root password set verified successfully
+      {{ root_pw_result.stdout | default('no output') }}
 ```
 ---
 <br>

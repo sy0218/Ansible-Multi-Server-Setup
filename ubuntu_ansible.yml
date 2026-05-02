@@ -8,7 +8,7 @@
   gather_facts: false
 
   roles:
-   - control
+#   - control
 
 # =====================================================
 # Ubuntu Servers
@@ -22,8 +22,8 @@
     ansible_ssh_common_args: "-o StrictHostKeyChecking=no"
 
   roles:
-        - root_password
-    #    - packages
+#        - root_password
+        - packages
     #    - pip_packages
     #    - nicname
     #    - cloud_init

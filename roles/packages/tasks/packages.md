@@ -1,59 +1,61 @@
 # 📦 Packages 설치 (Ansible)
-- 서버 초기 세팅에 필요한 **기본 패키지 설치**
-- `install_packages` 변수를 통해 **동적 패키지 관리**가 가능
+
+- 서버 초기 세팅용 기본 패키지 설치
+- `install_packages` 변수로 패키지 동적 관리
+- 설치 후 `dpkg -s` 기반으로 실제 설치 여부 검증
+
 ---
-<br>
 
 ## 🧩 main.yml
+
 ```yaml
 # -----------------------------------------------------
-# Install Packages
+# 우분투 기본  Packages 설치
 # -----------------------------------------------------
 
-# 기본 유틸리티 패키지 설치
+# 1. 기본 유틸리티 패키지 설치
 - name: "Install base packages"
   apt:
     name: "{{ install_packages }}"
-    state: present
-    update_cache: yes
+    state: present # 없으면 설치
+    update_cache: yes # apt update 먼저 실행
 
-# -----------------------------------------------------
-# 패키지 설치 검증
-# -----------------------------------------------------
-
+# 2. 패키지 설치 검증
+# 2. 패키지 설치 검증
 - name: "Check installed packages"
-  shell: dpkg -l | grep -E "{{ install_packages | replace(',', '|') }}"
+  shell: "dpkg -s {{ item }}"
+  loop: "{{ install_packages.split(',') }}"
   register: packages_check
   changed_when: false
+  failed_when: false
+
 
 - name: "Assert packages installed"
   assert:
     that:
-      - packages_check.rc == 0
+      - item.rc == 0
+    fail_msg: "[FAIL] Some packages are missing"
     success_msg: "Good!.. | Packages installed successfully"
-    fail_msg: "ERROR!.. | Some packages are missing"
+  loop: "{{ packages_check.results }}"
 ```
 ---
 <br>
 
 ## 🛠 작업 내용
-### 1️⃣ 기본 패키지 설치
-- install_packages 변수에 정의된 패키지 목록 설치
-- apt 패키지 매니저 사용
+### 1️⃣ 패키지 설치
+- `install_packages`에 정의된 패키지 설치
+- `apt` 기반 설치 (update_cache 포함)
 
 예시:
 ```yaml
 # host.ini
-install_packages:
-  - vim
-  - curl
-  - wget
-  - net-tools
+install_packages: "vim,curl,wget,net-tools"
 ```
 ---
 ### 2️⃣ 패키지 설치 검증
-- dpkg -l 결과를 기준으로 설치 여부 확인
-- 단순 실행 결과가 아닌 실제 패키지 존재 여부 검증
+- `dpkg -s <package>`로 설치 여부 확인
+- `rc == 0`이면 정상 설치
+- `rc != 0`이면 설치 실패
 ---
 <br>
 
@@ -63,6 +65,6 @@ TASK [Assert packages installed]
 ok: [192.168.56.60] => {
     "msg": "Good!.. | Packages installed successfully"
 }
-~~
+~
 ```
 ---
