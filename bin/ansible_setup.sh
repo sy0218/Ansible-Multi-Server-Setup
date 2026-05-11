@@ -15,6 +15,7 @@ log "===== START ansible setup ====="
 
 run_cmd "apt update"
 run_cmd "apt install -y vim"
+run_cmd "apt install -y ansible"
 run_cmd "ansible --version"
 run_cmd "mkdir -p /tmp/.ansible_tmp && chmod 1777 /tmp/.ansible_tmp"
 

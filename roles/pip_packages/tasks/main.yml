@@ -1,25 +1,44 @@
 # -----------------------------------------------------
-# Install Python packages via pip
+# 설치 전 Python 패키지 상태 확인 (멱등성 사전 체크)
 # -----------------------------------------------------
-- name: "Install Python packages"
-  pip:
-    name: "{{ pip_packages.split(',') }}"
-    state: present
-    executable: pip3
+- name: "Check pre-installed Python packages"
+  shell: "pip3 show {{ item }}"
+  loop: "{{ pip_packages.split(',') }}"
+  register: pip_pre_check
+  changed_when: false
+  failed_when: false
 
 # -----------------------------------------------------
-# Verify Python packages installation
+# 설치 누락 패키지 목록 산출
+# -----------------------------------------------------
+- name: "Determine missing Python packages"
+  set_fact:
+    missing_pip_packages: "{{ pip_pre_check.results | selectattr('rc','ne',0) | map(attribute='item') | list }}"
+
+# -----------------------------------------------------
+# 누락된 패키지만 pip 설치 (이미 설치된 경우 skip)
+# -----------------------------------------------------
+- name: "Install missing Python packages"
+  pip:
+    name: "{{ missing_pip_packages }}"
+    state: present
+    executable: pip3
+  when: missing_pip_packages | length > 0
+
+# -----------------------------------------------------
+# Python 패키지 설치 검증
 # -----------------------------------------------------
 - name: "Check installed Python packages"
   shell: "pip3 show {{ item }}"
   loop: "{{ pip_packages.split(',') }}"
   register: pip_check
   changed_when: false
-  ignore_errors: yes
+  failed_when: false
 
 - name: "Assert Python packages installed"
   assert:
     that:
-      - pip_check.results | selectattr('rc','equalto',0) | list | length == (pip_packages.split(',') | length)
+      - item.rc == 0
+    fail_msg: "[FAIL] Some Python packages are missing"
     success_msg: "Good!.. | Python packages installed successfully"
-    fail_msg: "ERROR!.. | Some Python packages are missing"
+  loop: "{{ pip_check.results }}"
